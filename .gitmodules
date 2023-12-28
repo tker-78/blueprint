@@ -1,0 +1,3 @@
+[submodule "go-programming-blueprints"]
+	path = go-programming-blueprints
+	url = git@github.com:tker-78/go-programming-blueprints.git
