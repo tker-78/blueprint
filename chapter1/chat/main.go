@@ -1,10 +1,10 @@
 package main
 
 import (
+	"html/template"
 	"net/http"
 	"path/filepath"
 	"sync"
-	"text/template"
 )
 
 type templateHandler struct {
@@ -17,10 +17,23 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.once.Do(func() {
 		t.tmpl = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
-	t.tmpl.Execute(w, "hello")
+	t.tmpl.Execute(w, r)
 }
 
 func main() {
-	http.Handle("/", &templateHandler{filename: "chat.html"})
-	http.ListenAndServe(":8080", nil)
+	r := newRoom() // roomを生成
+
+	mux := http.NewServeMux()
+	mux.Handle("/", &templateHandler{filename: "chat.html"})
+	mux.Handle("/room", r)
+
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: mux,
+	}
+
+	go r.run() // roomを起動
+
+	server.ListenAndServe()
+
 }
