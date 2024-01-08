@@ -58,7 +58,7 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	client := &client{
 		socket: socket,
-		send:   make(chan []byte, 1024),
+		send:   make(chan []byte, 256),
 		room:   r,
 	}
 	r.join <- client

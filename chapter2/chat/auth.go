@@ -5,9 +5,6 @@ import (
 	"log"
 	"net/http"
 	"strings"
-
-	"github.com/stretchr/gomniauth"
-	"github.com/stretchr/objx"
 )
 
 type authHandler struct {
@@ -32,43 +29,18 @@ func MustAuth(handler http.Handler) http.Handler {
 // /auth/{action}/{provider}
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	segs := strings.Split(r.URL.Path, "/")
+	// fmt.Fprintf(w, "%s/%s", action, provider)
 	action := segs[2]
-	provider := segs[3]
+	var provider string
+	if segs[3] != "" {
+		provider = segs[3]
+	} else {
+		log.Println("segs[3] does not exist.")
+	}
+
 	switch action {
 	case "login":
-		provider, err := gomniauth.Provider(provider)
-		if err != nil {
-			log.Println(err)
-		}
-		loginUrl, err := provider.GetBeginAuthURL(nil, nil)
-		if err != nil {
-			log.Println(err)
-		}
-		w.Header().Set("Location", loginUrl)
-		w.WriteHeader(http.StatusTemporaryRedirect)
-	case "callback":
-		provider, err := gomniauth.Provider(provider)
-		if err != nil {
-			log.Println(err)
-		}
-		creds, err := provider.CompleteAuth(objx.MustFromURLQuery(r.URL.RawQuery))
-		if err != nil {
-			log.Println(err)
-		}
-		user, err := provider.GetUser(creds)
-		if err != nil {
-			log.Println(err)
-		}
-		authCookieValue := objx.New(map[string]interface{}{
-			"name": user.Name(),
-		}).MustBase64()
-		http.SetCookie(w, &http.Cookie{
-			Name:  "auth",
-			Value: authCookieValue,
-			Path:  "/",
-		})
-		w.Header()["Location"] = []string{"/chat"}
-		w.WriteHeader(http.StatusTemporaryRedirect)
+		log.Println("TODO: ログイン処理", provider)
 	default:
 		w.WriteHeader(http.StatusFound)
 		fmt.Fprintf(w, "アクション%sには非対応です", action)
