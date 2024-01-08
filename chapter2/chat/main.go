@@ -24,7 +24,9 @@ func main() {
 	r := newRoom() // roomを生成
 
 	mux := http.NewServeMux()
-	mux.Handle("/", &templateHandler{filename: "chat.html"})
+	mux.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
+	mux.Handle("/login", &templateHandler{filename: "login.html"})
+	mux.HandleFunc("/auth/", loginHandler)
 	mux.Handle("/room", r)
 
 	server := &http.Server{
