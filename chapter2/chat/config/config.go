@@ -7,9 +7,10 @@ import (
 )
 
 type ConfigList struct {
+	SecurityKey  string
 	ClientId     string
 	ClientSecret string
-	Url          string
+	URL          string
 }
 
 var Google ConfigList
@@ -20,8 +21,9 @@ func init() {
 		log.Println("error while loading ini.")
 	}
 	Google = ConfigList{
+		SecurityKey:  cfg.Section("google").Key("security_key").String(),
 		ClientId:     cfg.Section("google").Key("client_id").String(),
 		ClientSecret: cfg.Section("google").Key("client_secret").String(),
-		Url:          cfg.Section("google").Key("url").String(),
+		URL:          cfg.Section("google").Key("url").String(),
 	}
 }

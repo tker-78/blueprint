@@ -26,9 +26,9 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	gomniauth.SetSecurityKey("セキュリティキー")
+	gomniauth.SetSecurityKey(config.Google.SecurityKey)
 	gomniauth.WithProviders(
-		google.New(config.Google.ClientId, config.Google.ClientSecret, config.Google.Url),
+		google.New(config.Google.ClientId, config.Google.ClientSecret, config.Google.URL),
 	)
 
 	r := newRoom() // roomを生成

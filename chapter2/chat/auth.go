@@ -5,6 +5,9 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/objx"
 )
 
 type authHandler struct {
@@ -40,7 +43,42 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch action {
 	case "login":
-		log.Println("TODO: ログイン処理", provider)
+		provider, err := gomniauth.Provider(provider)
+		if err != nil {
+			log.Println(err)
+		}
+		loginURL, err := provider.GetBeginAuthURL(nil, nil)
+		if err != nil {
+			log.Println(err)
+		}
+		w.Header().Set("Location", loginURL)
+		w.WriteHeader(http.StatusTemporaryRedirect)
+	case "callback":
+		provider, err := gomniauth.Provider(provider)
+		if err != nil {
+			log.Fatalln("認証を完了できませんでした")
+		}
+		creds, err := provider.CompleteAuth(objx.MustFromURLQuery(r.URL.RawQuery))
+		if err != nil {
+			log.Fatalln("認証情報を取得できませんでした")
+		}
+		user, err := provider.GetUser(creds)
+		if err != nil {
+			log.Fatalln("ユーザーを取得できませんでした")
+		}
+
+		// cookieをセットして/chatにリダイレクトする
+		authCookieValue := objx.New(map[string]interface{}{
+			"name": user.Name(),
+		}).MustBase64()
+		http.SetCookie(w, &http.Cookie{
+			Name:  "auth",
+			Value: authCookieValue,
+			Path:  "/",
+		})
+		w.Header()["Location"] = []string{"/chat"}
+		w.WriteHeader(http.StatusTemporaryRedirect)
+
 	default:
 		w.WriteHeader(http.StatusFound)
 		fmt.Fprintf(w, "アクション%sには非対応です", action)
