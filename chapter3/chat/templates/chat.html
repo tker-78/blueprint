@@ -2,25 +2,36 @@
   <head>
     <title>チャット</title>
     <style>
-      input { display: block; }
-      ul { list-style: none; }
+      ul#messages {list-style: none;}
+      ul#messages li { padding-bottom: 5px;  margin-top: 5px; border-bottom: 1px dotted gray;}
+      ul#messages li img { margin-right: 10px;}
+      #chatbox_container {margin-top: 30px; width: 70%;}
     </style>
   </head>
   <body>
-    <ul id="messages"></ul>
-    WebSocketを使ったチャットアプリケーション
-    <form id="chatbox">
-      {{.UserData.name }}:<br/>
-      <textarea></textarea>
-      <input type="submit" value="送信" />
-    </form>
-
+    <div class="container">
+      <h2>WebSocketを使ったチャットアプリケーション</h2>
+      <a href="/logout">ログアウト</a> <br>
+      <a href="/upload">画像アップロード</a>
+    </div>
+    <div class="container" id="chatbox_container">
+      <ul id="messages"></ul>
+      <form id="chatbox" role="form">
+        <div class="form-group">
+          <label for="message">{{.UserData.name }}からメッセージを送信</label>
+          <textarea id="message" cols="10" rows="10" class="form-control"></textarea>
+        </div>
+        <input type="submit" value="送信" class="btn btn-primary">
+      </form>
+    </div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js">
 </script>
 <script>
   $(function(){
     var socket = null;
-    var msgBox = $("#chatbox textarea");
+    var msgBox = $("#chatbox_container #chatbox textarea");
     var messages = $("#messages");
     $("#chatbox").submit(function(){
       if (!msgBox.val()) return false;
@@ -43,9 +54,16 @@
           var msg = JSON.parse(e.data);
           messages.append(
             $('<li>').append(
-              $("<strong>").text(msg.Name + ": "),
-                $("<span>").text(msg.Message),
-                  $("<span>").text(" " + msg.When),
+              $("<img>").attr("title", msg.Name).css({
+                width: "50px",
+                height: "50px",
+                // verticalAlign: "middle",
+                borderRadius: "50%",
+              }).attr("src", msg.AvatarURL),
+              // $("<strong>").text(msg.Name + ": "),
+              $("<span>").text(msg.Message),
+              "<br>",
+              $("<span>").text(" " + msg.When),
             )
           );
       }

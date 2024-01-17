@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"path/filepath"
@@ -38,12 +39,19 @@ func main() {
 		google.New(config.Google.ClientId, config.Google.ClientSecret, config.Google.URL),
 	)
 
-	r := newRoom() // roomを生成
+	r := newRoom(fileSystemAvatar) // roomを生成
 
 	mux := http.NewServeMux()
 	mux.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	mux.Handle("/login", &templateHandler{filename: "login.html"})
+	mux.Handle("/upload", &templateHandler{filename: "upload.html"})
+
+	// uploader
+	mux.HandleFunc("/uploader", uploadHandler)
+	mux.Handle("/avatars/", http.StripPrefix("/avatars/", http.FileServer(http.Dir("./avatars"))))
+
 	mux.HandleFunc("/auth/", loginHandler)
+	mux.HandleFunc("/logout", logoutHandler)
 	mux.Handle("/room", r)
 
 	server := &http.Server{
@@ -53,6 +61,7 @@ func main() {
 
 	go r.run() // roomを起動
 
+	fmt.Println("running at port 8080...")
 	server.ListenAndServe()
 
 }
