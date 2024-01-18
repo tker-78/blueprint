@@ -16,7 +16,7 @@ type ConfigList struct {
 var Google ConfigList
 
 func init() {
-	cfg, err := ini.Load("config.ini")
+	cfg, err := ini.Load("../config.ini")
 	if err != nil {
 		log.Println("error while loading ini.")
 	}
