@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
 
@@ -55,13 +55,12 @@ func main() {
 	mux.Handle("/room", r)
 
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":" + os.Getenv("PORT"),
 		Handler: mux,
 	}
 
 	go r.run() // roomを起動
 
-	fmt.Println("running at port 8080...")
 	server.ListenAndServe()
 
 }
