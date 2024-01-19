@@ -21,11 +21,15 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	r := newRoom()
 	mux := http.NewServeMux()
-	mux.Handle("/", &templateHandler{filename: "index.html"})
+	mux.Handle("/", &templateHandler{filename: "chat.html"})
+	mux.Handle("/room", r)
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: mux,
 	}
+
+	go r.run()
 	server.ListenAndServe()
 }

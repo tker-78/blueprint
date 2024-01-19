@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blueprint</title>
+</head>
+<body>
+  <p>This is chat page.</p>
+  <div class="container" id="chatbox_container">
+    <ul id="messages">
+      <li>messages</li>
+    </ul>
+
+    <form id="chatbox" role="form">
+      <div class="form-group">
+        <textarea id="message" cols="30" rows="10" class="form-control"></textarea>
+      </div>
+      <input type="submit" value="送信">
+    </form>
+
+  </div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+  $(function() {
+    var socket = null;
+    var msgBox = $("#chatbox_container #chatbox textarea")
+    var messages = $("#messages")
+    $("#chatbox").submit(function() {
+      if (!msgBox.val()) {
+        return false;
+      }
+      if (!socket) {
+        alert("websocket接続が行われていません")
+        return false;
+      }
+      socket.send(JSON.stringify({"Message": msgBox.val()}));
+      msgBox.val("");
+      return false;
+    })
+
+    socket = new WebSocket("ws://localhost:8080/room");
+    socket.onmessage = function(e) {
+      var msg = JSON.parse(e.data);
+      console.log(msg)
+      messages.append(
+        $("<li>").append(
+          $("<span>").text(msg.Message)
+        )
+      );
+    }
+
+  })
+
+</script>
+</body>
+</html>
