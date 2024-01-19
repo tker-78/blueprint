@@ -3,7 +3,6 @@ package main
 import (
 	"html/template"
 	"net/http"
-	"os"
 	"path/filepath"
 	"sync"
 
@@ -39,7 +38,7 @@ func main() {
 		google.New(config.Google.ClientId, config.Google.ClientSecret, config.Google.URL),
 	)
 
-	r := newRoom(fileSystemAvatar) // roomを生成
+	r := newRoom(authAvatar) // roomを生成
 
 	mux := http.NewServeMux()
 	mux.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
@@ -55,7 +54,7 @@ func main() {
 	mux.Handle("/room", r)
 
 	server := &http.Server{
-		Addr:    ":" + os.Getenv("PORT"),
+		Addr:    ":8080",
 		Handler: mux,
 	}
 

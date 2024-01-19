@@ -2,8 +2,9 @@ package config
 
 import (
 	"log"
+	"os"
 
-	"gopkg.in/ini.v1"
+	"github.com/joho/godotenv"
 )
 
 type ConfigList struct {
@@ -16,14 +17,14 @@ type ConfigList struct {
 var Google ConfigList
 
 func init() {
-	cfg, err := ini.Load("../config.ini")
+	err := godotenv.Load()
 	if err != nil {
 		log.Println("error while loading ini.")
 	}
 	Google = ConfigList{
-		SecurityKey:  cfg.Section("google").Key("security_key").String(),
-		ClientId:     cfg.Section("google").Key("client_id").String(),
-		ClientSecret: cfg.Section("google").Key("client_secret").String(),
-		URL:          cfg.Section("google").Key("url").String(),
+		SecurityKey:  os.Getenv("security_key"),
+		ClientId:     os.Getenv("client_id"),
+		ClientSecret: os.Getenv("client_secret"),
+		URL:          os.Getenv("url"),
 	}
 }

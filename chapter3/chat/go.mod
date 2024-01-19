@@ -4,9 +4,9 @@ go 1.21.4
 
 require (
 	github.com/gorilla/websocket v1.5.1
+	github.com/joho/godotenv v1.5.1
 	github.com/stretchr/gomniauth v0.0.0-20170717123514-4b6c822be2eb
 	github.com/stretchr/objx v0.5.1
-	gopkg.in/ini.v1 v1.67.0
 )
 
 require (
